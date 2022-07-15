@@ -4,23 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// void	ft_putnbr_fd(long n)
-// {
-// 	if ((long) n == -2147483648)
-// 	{
-// 		write(1, "-2147483648", 11);
-// 		return ;
-// 	}
-// 	if (n < 0)
-// 	{
-// 		write(1, "-", 1);
-// 		n = n * -1;
-// 	}
-// 	if (n >= 10)
-// 		ft_putnbr_fd(n / 10);
-// 	ft_putchar_fd((n % 10) + '0', 1);
-// }
-
 size_t	ft_countdigits(long int x)
 {
 	size_t	count;
@@ -78,7 +61,7 @@ int putstr(char *str)
 	return (i);
 }
 
-char	*ft_utoa(unsigned int c)
+char	*ft_utoa(long c)
 {
 	long int	tempnb;
 	int			x;
@@ -106,28 +89,65 @@ char	*ft_utoa(unsigned int c)
 	return (number);
 }
 
-int	types(va_list argl, char *arg)
+int	ft_putchar_fd(char c)
+{
+	int i;
+
+	i = 0;
+	if (c == 58)
+		write(1, "a", sizeof(char));
+	else if (c == 59)
+		write(1, "b", sizeof(char));
+	else if (c == 60)
+		write(1, "c", sizeof(char));
+	else if (c == 61)
+		write(1, "d", sizeof(char));
+	else if (c == 62)
+		write(1, "e", sizeof(char));
+	else if (c == 63)
+		write(1, "f", sizeof(char));
+	else
+		write(1, &c, 1);
+	return (i);
+}
+
+
+void putnbr(long i, int base)
+{
+	if (i >= base)
+	{
+		putnbr(i / base, base);
+	}
+	ft_putchar_fd((i % base) + '0');
+}
+
+
+int	types(va_list *argl, char *arg)
 {
 	int	i;
 	char	sc;
 
 	i = 0;
 	if (arg[i] == 's')
-		return (putstr(va_arg(argl, char *)));
+		return (putstr(va_arg(*argl, char *)));
 	if (arg[i] == 'd' || arg[i] == 'i')
-		return (putstr(ft_itoa(va_arg(argl, int))));
+		return (putstr(ft_itoa(va_arg(*argl, int))));
 	if (arg[i] == 'c')
 	{
-		sc = va_arg(argl, int);
+		sc = va_arg(*argl, char);
 		return (write(1, &sc, sizeof(char)));
 	}
 	if (arg[i] == '%')
 		return (write(1, &arg[0], sizeof(char)));
 	if	(arg[i] == 'u')
-		return (putstr(ft_utoa(va_arg(argl, unsigned int))));
+		return (putstr(ft_utoa(va_arg(*argl, unsigned int))));
+	if (arg[i] == 'p')
+	{
+		putstr("0x");
+		putnbr(va_arg(*argl, long), 16);
+	}
 	else
 		write(1, &argl[i], sizeof(char));
-	
 	return (0);
 }
 
@@ -161,7 +181,7 @@ int ft_printf(const char *args, ...)
 		{
 			args++;
 			len--;
-			c += types(arglist, (char *) args);
+			c += types(&arglist, (char *) args);
 			args++;
 			len--;
 		}
@@ -173,18 +193,43 @@ int ft_printf(const char *args, ...)
 int main(void)
 {
 	// const char str[] = "banana";
-	const char nstr[] = "second";
+	// const char nstr[] = "second";
 	// const char estr[] = "turd";
-    int	x;
+    // int	x;
 	// int	y;
-	
-	x = 	ft_printf("MINE\npercentage:%%\nchar:%c\nchar*:%s\nunsignedint:%u\nsignedintD:%d\ndecimalI:%i\n\n\n", 'c', nstr, 4294967295, -2147483647, -2147483646);
-	// y = 	printf("NOTS\npercentage:%%\nchar:%c\nchar*:%s\nunsignedint:%ld\nsignedintD:%d\ndecimalI:%i\n\n\n", 'c', nstr, 4294967295, -2147483647, -2147483646);
+	int	z;
+
+	z = ft_printf("%c", 'b');
+	// x = printf("\nnormal: %p\n", &s);
+
+	// x = 	ft_printf("MINE\npercentage : %%\nchar : %c\nchar* : %s\nunsigned int : %u\nsigned int D : %d\ndecimal I : %i\n\n\n", 'c', nstr, 4294967295, -2147483647, -2147483646);
+	// x = 	printf("MINE\naddress: %p\npercentage:%%\nchar:%c\nchar*:%s\nunsignedint:%ld\nsignedintD:%d\ndecimalI:%i\n\n\n", &x, 'c', nstr, 4294967295, -2147483647, -2147483646);
 
 	
 
 
 	// system("leaks a.out");
-    printf("\nlength: %d\n", x);
+    // printf("\nlength%d\n", x);
     return (0);
 }
+
+
+
+
+
+// void	ft_putnbr_fd(long n)
+// {
+// 	if ((long) n == -2147483648)
+// 	{
+// 		write(1, "-2147483648", 11);
+// 		return ;
+// 	}
+// 	if (n < 0)
+// 	{
+// 		write(1, "-", 1);
+// 		n = n * -1;
+// 	}
+// 	if (n >= 10)
+// 		ft_putnbr_fd(n / 10);
+// 	ft_putchar_fd((n % 10) + '0', 1);
+// }
