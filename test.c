@@ -31,27 +31,31 @@ int	ft_putchar_fd(char c)
 }
 
 
-void putnbr(long i, int base)
+int putnbr(long i, int base)
 {
+	int count;
+	count = 1;
 	if (i >= base)
 	{
-		putnbr(i / base, base);
+		count = 1 + putnbr(i / base, base);
 	}
 	ft_putchar_fd((i % base) + '0');
+	return (count);
 }
 
 
 
 int main (void)
 {
-	int x;
-	long y;
+	// int x;
+	// long y;
 
-	y = (long) &x;
-	write(1, "0x", 8);
-	// write(1, "x", 2);
+	// y = (long) &x;
+	// write(1, "0x", 8);
+	// // write(1, "x", 2);
 
-	putnbr(y, 16);
+	printf("\n%d", putnbr(1600500, 16));
+	// printf("%x", 15);
 
 	return (0);
 }

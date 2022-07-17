@@ -4,6 +4,51 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+int	ft_strlen(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i] != '\0')
+		i++;
+	return (i);
+}
+
+int	ft_putchar_x(char c)
+{
+	int i;
+
+	i = 0;
+	if (c == 58)
+		write(1, "A", sizeof(char));
+	else if (c == 59)
+		write(1, "B", sizeof(char));
+	else if (c == 60)
+		write(1, "C", sizeof(char));
+	else if (c == 61)
+		write(1, "D", sizeof(char));
+	else if (c == 62)
+		write(1, "E", sizeof(char));
+	else if (c == 63)
+		write(1, "F", sizeof(char));
+	else
+		write(1, &c, 1);
+	return (i);
+}
+
+int putnbr_x(long i, int base)
+{
+	int	count;
+	count = 1;
+	if (i >= base)
+	{
+		count = 1 + putnbr_x(i / base, base);
+	}
+	ft_putchar_x((i % base) + '0');
+	return (count);
+}
+
 size_t	ft_countdigits(long int x)
 {
 	size_t	count;
@@ -112,13 +157,16 @@ int	ft_putchar_fd(char c)
 }
 
 
-void putnbr(long i, int base)
+int putnbr(long i, int base)
 {
+	int	count;
+	count = 1;
 	if (i >= base)
 	{
-		putnbr(i / base, base);
+		count = 1 + putnbr(i / base, base);
 	}
 	ft_putchar_fd((i % base) + '0');
+	return (count);
 }
 
 
@@ -134,7 +182,7 @@ int	types(va_list *argl, char *arg)
 		return (putstr(ft_itoa(va_arg(*argl, int))));
 	if (arg[i] == 'c')
 	{
-		sc = va_arg(*argl, char);
+		sc = va_arg(*argl, int);
 		return (write(1, &sc, sizeof(char)));
 	}
 	if (arg[i] == '%')
@@ -144,21 +192,15 @@ int	types(va_list *argl, char *arg)
 	if (arg[i] == 'p')
 	{
 		putstr("0x");
-		putnbr(va_arg(*argl, long), 16);
+		return (putnbr(va_arg(*argl, long), 16) + 2);
 	}
-	else
-		write(1, &argl[i], sizeof(char));
+	if (arg[i] == 'x')
+		return (putnbr(va_arg(*argl, long), 16));
+	if (arg[i] == 'X')
+		return (putnbr_x(va_arg(*argl, long), 16));
+	// else
+	// 	write(1, &argl[i], sizeof(char));
 	return (0);
-}
-
-int	ft_strlen(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] != '\0')
-		i++;
-	return (i);
 }
 
 int ft_printf(const char *args, ...)
@@ -171,7 +213,7 @@ int ft_printf(const char *args, ...)
 	int len = ft_strlen((char *) args);
 	while (args && len != 0)
 	{
-		if (args[0] != '%' && ft_strlen((char *) args) != 0)
+		while (args[0] != '%' && ft_strlen((char *) args) != 0)
 		{	
 			c += write(1, &args[0], sizeof(char));
 			args++;
@@ -179,12 +221,14 @@ int ft_printf(const char *args, ...)
 		}
 		if (args[0] == '%')
 		{
-			args++;
-			len--;
-			c += types(&arglist, (char *) args);
+			c += types(&arglist, (char *) args + 1);
 			args++;
 			len--;
 		}
+		if (len == 0)
+			break;
+		args++;
+		len--;
 	}
 	va_end(arglist);
 	return (c);
@@ -195,21 +239,25 @@ int main(void)
 	// const char str[] = "banana";
 	// const char nstr[] = "second";
 	// const char estr[] = "turd";
-    // int	x;
+    int	x;
 	// int	y;
 	int	z;
 
-	z = ft_printf("%c", 'b');
-	// x = printf("\nnormal: %p\n", &s);
+	// x = ft_printf("MINE\nstring: %s\nchar: %c\nint D: %d\nint I: %i\npercentage: %%%%\nunsigned int: %u\npointer adress: %p\nunsigned hex L: %x\nunsigned hex U: %X\n", str, 97, 2147483647, -2147483648, 4294967295, &z, 4294967295,  4294967295);
+	// z = printf("blob\nstring: %s\nchar: %c\nint D: %d\nint I: %li\npercentage: %%%%\nunsigned int: %ld\npointer adress: %p\nunsigned hex L: %lx\nunsigned hex U: %lX\n", str, 97, 2147483647, -2147483648, 4294967295, &z, 4294967295,  4294967295);
 
 	// x = 	ft_printf("MINE\npercentage : %%\nchar : %c\nchar* : %s\nunsigned int : %u\nsigned int D : %d\ndecimal I : %i\n\n\n", 'c', nstr, 4294967295, -2147483647, -2147483646);
 	// x = 	printf("MINE\naddress: %p\npercentage:%%\nchar:%c\nchar*:%s\nunsignedint:%ld\nsignedintD:%d\ndecimalI:%i\n\n\n", &x, 'c', nstr, 4294967295, -2147483647, -2147483646);
+	
+	
+	x = ft_printf(" %c %c %c ", '1', '2', '3');
+	z = printf(" %c %c %c ", '1', '2', '3');
 
 	
 
 
 	// system("leaks a.out");
-    // printf("\nlength%d\n", x);
+    printf("\nlength MINE: %d\nlength blob: %d\n", x, z);
     return (0);
 }
 
