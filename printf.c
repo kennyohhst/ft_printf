@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 
 int	ft_strlen(char *str)
@@ -17,9 +18,6 @@ int	ft_strlen(char *str)
 
 int	ft_putchar_x(char c)
 {
-	int i;
-
-	i = 0;
 	if (c == 58)
 		write(1, "A", sizeof(char));
 	else if (c == 59)
@@ -34,22 +32,10 @@ int	ft_putchar_x(char c)
 		write(1, "F", sizeof(char));
 	else
 		write(1, &c, 1);
-	return (i);
+	return (0);
 }
 
-int putnbr_x(long i, int base)
-{
-	int	count;
-	count = 1;
-	if (i >= base)
-	{
-		count = 1 + putnbr_x(i / base, base);
-	}
-	ft_putchar_x((i % base) + '0');
-	return (count);
-}
-
-size_t	ft_countdigits(long int x)
+size_t	ft_countdigits(long long x)
 {
 	size_t	count;
 
@@ -98,6 +84,8 @@ int putstr(char *str)
 	int	i;
 	
 	i = 0;
+	if (!str)
+		return (putstr("(null)"));
 	while (str[i])
 	{
 		write(1, &str[i], sizeof(char));
@@ -136,9 +124,6 @@ char	*ft_utoa(long c)
 
 int	ft_putchar_fd(char c)
 {
-	int i;
-
-	i = 0;
 	if (c == 58)
 		write(1, "a", sizeof(char));
 	else if (c == 59)
@@ -153,53 +138,86 @@ int	ft_putchar_fd(char c)
 		write(1, "f", sizeof(char));
 	else
 		write(1, &c, 1);
-	return (i);
+	return (0);
 }
 
-
-int putnbr(long i, int base)
+int putnbr_x(long long i, int base, int count)
 {
-	int	count;
 	count = 1;
+
+	if (i < 0)
+	{
+		i = i * -1;
+		count += write(1, "-", sizeof(char));
+	}
 	if (i >= base)
 	{
-		count = 1 + putnbr(i / base, base);
+		count += putnbr_x(i / base, base, count);
 	}
-	ft_putchar_fd((i % base) + '0');
+	count += ft_putchar_x((i % base) + '0');
+	return (count);
+}
+
+int putnbr(long long i, int base, int count)
+{
+	count = 1;
+
+	if (i < 0)
+	{
+		i = i * -1;
+		count += write(1, "-", sizeof(char));
+	}
+	if (i >= base)
+	{
+		count += putnbr(i / base, base, count);
+	}
+	count += ft_putchar_fd((i % base) + '0');
 	return (count);
 }
 
 
+// int putnbr(long long i, long long base, int count)
+// {
+// 	if (i < 0)
+// 	{
+// 		i = i * -1;
+// 		count += write(1, "-", sizeof(char));
+// 	}
+// 	if (i >= base)
+// 	{
+// 		putnbr(i / base, base, count);
+// 	}
+// 	count = ft_putchar_fd((i % base) + '0');
+// 	return (count);
+// }
+
+
 int	types(va_list *argl, char *arg)
 {
-	int	i;
 	char	sc;
 
-	i = 0;
-	if (arg[i] == 's')
+	if (arg[0] == 's')
 		return (putstr(va_arg(*argl, char *)));
-	if (arg[i] == 'd' || arg[i] == 'i')
-		return (putstr(ft_itoa(va_arg(*argl, int))));
-	if (arg[i] == 'c')
+	if (arg[0] == 'd' || arg[0] == 'i')
+		return (putnbr(va_arg(*argl, int), 10, 0));
+	if (arg[0] == 'c')
 	{
 		sc = va_arg(*argl, int);
 		return (write(1, &sc, sizeof(char)));
 	}
-	if (arg[i] == '%')
+	if (arg[0] == '%')
 		return (write(1, &arg[0], sizeof(char)));
-	if	(arg[i] == 'u')
-		return (putstr(ft_utoa(va_arg(*argl, unsigned int))));
-	if (arg[i] == 'p')
-	{
-		putstr("0x");
-		return (putnbr(va_arg(*argl, long), 16) + 2);
-	}
-	if (arg[i] == 'x')
-		return (putnbr(va_arg(*argl, long), 16));
-	if (arg[i] == 'X')
-		return (putnbr_x(va_arg(*argl, long), 16));
-	// else
-	// 	write(1, &argl[i], sizeof(char));
+	if	(arg[0] == 'u')
+		return (putnbr(va_arg(*argl, unsigned int), 10, 0));
+	// if (arg[0] == 'p')
+	// {
+	// 	putstr("0x");
+	// 	return (putnbr(va_arg(*argl, long), 16) - 1);
+	// }
+	if (arg[0] == 'x')
+		return (putnbr(va_arg(*argl, unsigned int), 16, 0));
+	if (arg[0] == 'X')
+		return (putnbr_x(va_arg(*argl, unsigned int), 16, 0));
 	return (0);
 }
 
@@ -211,7 +229,7 @@ int ft_printf(const char *args, ...)
 
 	c = 0;
 	int len = ft_strlen((char *) args);
-	while (args && len != 0)
+	while (*args)
 	{
 		while (args[0] != '%' && ft_strlen((char *) args) != 0)
 		{	
@@ -225,7 +243,7 @@ int ft_printf(const char *args, ...)
 			args++;
 			len--;
 		}
-		if (len == 0)
+		if (ft_strlen((char *) args) == 0)
 			break;
 		args++;
 		len--;
@@ -234,32 +252,32 @@ int ft_printf(const char *args, ...)
 	return (c);
 }
 
-int main(void)
-{
-	// const char str[] = "banana";
-	// const char nstr[] = "second";
-	// const char estr[] = "turd";
-    int	x;
-	// int	y;
-	int	z;
+// int main(void)
+// {
 
-	// x = ft_printf("MINE\nstring: %s\nchar: %c\nint D: %d\nint I: %i\npercentage: %%%%\nunsigned int: %u\npointer adress: %p\nunsigned hex L: %x\nunsigned hex U: %X\n", str, 97, 2147483647, -2147483648, 4294967295, &z, 4294967295,  4294967295);
-	// z = printf("blob\nstring: %s\nchar: %c\nint D: %d\nint I: %li\npercentage: %%%%\nunsigned int: %ld\npointer adress: %p\nunsigned hex L: %lx\nunsigned hex U: %lX\n", str, 97, 2147483647, -2147483648, 4294967295, &z, 4294967295,  4294967295);
-
-	// x = 	ft_printf("MINE\npercentage : %%\nchar : %c\nchar* : %s\nunsigned int : %u\nsigned int D : %d\ndecimal I : %i\n\n\n", 'c', nstr, 4294967295, -2147483647, -2147483646);
-	// x = 	printf("MINE\naddress: %p\npercentage:%%\nchar:%c\nchar*:%s\nunsignedint:%ld\nsignedintD:%d\ndecimalI:%i\n\n\n", &x, 'c', nstr, 4294967295, -2147483647, -2147483646);
+//     int	x;
+// 	int	y;
+// 	// long	z = -1;
 	
-	
-	x = ft_printf(" %c %c %c ", '1', '2', '3');
-	z = printf(" %c %c %c ", '1', '2', '3');
+// 	x = ft_printf("%d", 111);
 
-	
+// 	y = printf("%d", 111);
+
+// 	// 	printf(" %p ", -1));
+// 	// printf(" %p ", 1));
+// 	// printf(" %p ", 15));
+// 	// printf(" %p ", 16));
+// 	// printf(" %p ", 17));
+// 	// printf(" %p %p ", LONG_MIN, LONG_MAX));
+// 	// printf(" %p %p ", INT_MIN, INT_MAX));
+// 	// printf(" %p %p ", ULONG_MAX, -ULONG_MAX));
+// 	// printf(" %p %p ", 0, 0));
 
 
-	// system("leaks a.out");
-    printf("\nlength MINE: %d\nlength blob: %d\n", x, z);
-    return (0);
-}
+// 	// system("leaks a.out");
+//     printf("\nlength MINE: %d\nlength blob: %d\n", x, y);
+//     return (0);
+// }
 
 
 

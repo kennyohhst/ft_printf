@@ -1,18 +1,10 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <limits.h>
 
 int	ft_putchar_fd(char c)
 {
-	// int i;
-	// char	*table;
-
-	// i = 0;
-	// table = "abcdef";
-	// if (c >= 58 && c <= 63)
-	// 	write (1, &(table[c - 58]), 1);
-	// else
-	// 	write(1, &c, 1);
 	if (c == 58)
 		write(1, "a", sizeof(char));
 	else if (c == 59)
@@ -30,32 +22,31 @@ int	ft_putchar_fd(char c)
 	return (0);
 }
 
-
-int putnbr(long i, int base)
+int putnbr(long long i, int base, int count)
 {
-	int count;
 	count = 1;
+
+	if (i < 0)
+	{
+		i = i * -1;
+		count += write(1, "-", sizeof(char));
+	}
 	if (i >= base)
 	{
-		count = 1 + putnbr(i / base, base);
+		count += putnbr(i / base, base, count);
 	}
-	ft_putchar_fd((i % base) + '0');
+	count += ft_putchar_fd((i % base) + '0');
 	return (count);
 }
 
-
-
 int main (void)
 {
-	// int x;
-	// long y;
+	long i;
+	int c;
 
-	// y = (long) &x;
-	// write(1, "0x", 8);
-	// // write(1, "x", 2);
-
-	printf("\n%d", putnbr(1600500, 16));
-	// printf("%x", 15);
-
+	i = -11000;
+	c = putnbr(i, 10, 0);
+	printf("\n");
+	putnbr(c, 10, 0);
 	return (0);
 }
