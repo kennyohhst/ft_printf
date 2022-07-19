@@ -6,7 +6,7 @@
 /*   By: kkalika <kkalika@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 14:57:00 by kkalika           #+#    #+#             */
-/*   Updated: 2022/07/19 15:00:26 by kkalika          ###   ########.fr       */
+/*   Updated: 2022/07/19 16:38:09 by kkalika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ int	ft_strlen(char *str)
 	int	i;
 
 	i = 0;
+	if (!*str)
+		return (0);
 	while (str[i] != '\0')
 		i++;
 	return (i);
@@ -55,10 +57,7 @@ int	types(va_list *argl, char *arg)
 	if (arg[0] == 'u')
 		return (putnbr(va_arg(*argl, unsigned int), 10, 0));
 	if (arg[0] == 'p')
-	{
-		putstr("0x");
-		return (putnbr_p(va_arg(*argl, long long), 16, 0) + 2);
-	}
+		return (putstr("0x") + putnbr_p(va_arg(*argl, long long), 16, 0));
 	if (arg[0] == 'x')
 		return (putnbr(va_arg(*argl, unsigned int), 16, 0));
 	if (arg[0] == 'X')
@@ -80,7 +79,7 @@ int	ft_printf(const char *args, ...)
 			c += write(1, &args[0], sizeof(char));
 			args++;
 		}
-		if (args[0] == '%')
+		if (args[0] == '%' && ft_strlen((char *) args) != 0)
 		{
 			c += types(&arglist, (char *) args + 1);
 			args++;
@@ -96,12 +95,10 @@ int	ft_printf(const char *args, ...)
 // int main(void)
 // {
 
-//     long	x;
-// 	// int	y;
-// 	long z;
+//     // long	x;
+// 	// // int	y;
+// 	// long z;
 
-// 	z = LONG_MIN;
-// 	x = LONG_MAX;
 // 	// y = printf("%p\n", (void *) -1);
 // 	// y = printf("%p", &z);
 
@@ -109,9 +106,9 @@ int	ft_printf(const char *args, ...)
 // 	// y = ft_printf("This %p is even stranger", (void *)-1);
 // 	// x = ft_printf("TEST->%p\n", &test);
 
-// 	ft_printf(" %p %p ", (void *)-1, &x);
+// 	ft_printf("%X\n", -5);
 
-// 	printf(" %p %p ", (void *)-1, &x);
+// 	printf("%X", -5);
 
 // 	// system("leaks a.out");
 //     // printf("\nlength MINE: %d\nlength blob: %d\n", x, y);

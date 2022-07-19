@@ -6,13 +6,13 @@
 /*   By: kkalika <kkalika@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 14:48:04 by kkalika           #+#    #+#             */
-/*   Updated: 2022/07/19 15:01:26 by kkalika          ###   ########.fr       */
+/*   Updated: 2022/07/19 16:30:51 by kkalika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_putchar_x(char c)
+void	ft_putchar_x(char c)
 {
 	if (c == 58)
 		write(1, "A", sizeof(char));
@@ -28,26 +28,20 @@ int	ft_putchar_x(char c)
 		write(1, "F", sizeof(char));
 	else
 		write(1, &c, 1);
-	return (0);
 }
 
 int	putnbr_x(unsigned long long i, unsigned int base, int count)
 {
 	count = 1;
-	if (i < 0)
-	{
-		i = i * -1;
-		count += write(1, "-", sizeof(char));
-	}
 	if (i >= base)
 	{
 		count += putnbr_x(i / base, base, count);
 	}
-	count += ft_putchar_x((i % base) + '0');
+	ft_putchar_x((i % base) + '0');
 	return (count);
 }
 
-int	ft_putchar_fd(char c)
+void	ft_putchar_fd(char c)
 {
 	if (c == 58)
 		write(1, "a", sizeof(char));
@@ -63,7 +57,6 @@ int	ft_putchar_fd(char c)
 		write(1, "f", sizeof(char));
 	else
 		write(1, &c, 1);
-	return (0);
 }
 
 int	putnbr(long long i, int base, int count)
@@ -78,22 +71,17 @@ int	putnbr(long long i, int base, int count)
 	{
 		count += putnbr(i / base, base, count);
 	}
-	count += ft_putchar_fd((i % base) + '0');
+	ft_putchar_fd((i % base) + '0');
 	return (count);
 }
 
 int	putnbr_p(unsigned long long i, unsigned int base, int count)
 {
 	count = 1;
-	if (i < 0 && base == 10)
-	{
-		i = i * -1;
-		count += write(1, "-", sizeof(char));
-	}
 	if (i >= base)
 	{
 		count += putnbr_p(i / base, base, count);
 	}
-	count += ft_putchar_fd((i % base) + '0');
+	ft_putchar_fd((i % base) + '0');
 	return (count);
 }
