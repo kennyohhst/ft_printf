@@ -6,7 +6,7 @@
 /*   By: kkalika <kkalika@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 14:57:00 by kkalika           #+#    #+#             */
-/*   Updated: 2022/07/19 16:38:09 by kkalika          ###   ########.fr       */
+/*   Updated: 2022/07/19 19:03:08 by kkalika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,13 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
-int	putstr(char *str)
+int	ft_putstr(char *str)
 {
 	int	i;
 
 	i = 0;
 	if (!str)
-		return (putstr("(null)"));
+		return (ft_putstr("(null)"));
 	while (str[i])
 	{
 		write(1, &str[i], sizeof(char));
@@ -39,14 +39,14 @@ int	putstr(char *str)
 	return (i);
 }
 
-int	types(va_list *argl, char *arg)
+int	ft_types(va_list *argl, char *arg)
 {
 	char	sc;
 
 	if (arg[0] == 's')
-		return (putstr(va_arg(*argl, char *)));
+		return (ft_putstr(va_arg(*argl, char *)));
 	if (arg[0] == 'd' || arg[0] == 'i')
-		return (putnbr(va_arg(*argl, int), 10, 0));
+		return (ft_putnbr(va_arg(*argl, int), 10, 0));
 	if (arg[0] == 'c')
 	{
 		sc = va_arg(*argl, int);
@@ -55,13 +55,13 @@ int	types(va_list *argl, char *arg)
 	if (arg[0] == '%')
 		return (write(1, &arg[0], sizeof(char)));
 	if (arg[0] == 'u')
-		return (putnbr(va_arg(*argl, unsigned int), 10, 0));
+		return (ft_putnbr(va_arg(*argl, unsigned int), 10, 0));
 	if (arg[0] == 'p')
-		return (putstr("0x") + putnbr_p(va_arg(*argl, long long), 16, 0));
+		return (ft_putstr("0x") + ft_putnbr_p(va_arg(*argl, long long), 16, 0));
 	if (arg[0] == 'x')
-		return (putnbr(va_arg(*argl, unsigned int), 16, 0));
+		return (ft_putnbr(va_arg(*argl, unsigned int), 16, 0));
 	if (arg[0] == 'X')
-		return (putnbr_x(va_arg(*argl, unsigned int), 16, 0));
+		return (ft_putnbr_x(va_arg(*argl, unsigned int), 16, 0));
 	return (0);
 }
 
@@ -81,7 +81,7 @@ int	ft_printf(const char *args, ...)
 		}
 		if (args[0] == '%' && ft_strlen((char *) args) != 0)
 		{
-			c += types(&arglist, (char *) args + 1);
+			c += ft_types(&arglist, (char *) args + 1);
 			args++;
 		}
 		if (ft_strlen((char *) args) == 0)
@@ -91,26 +91,3 @@ int	ft_printf(const char *args, ...)
 	va_end(arglist);
 	return (c);
 }
-
-// int main(void)
-// {
-
-//     // long	x;
-// 	// // int	y;
-// 	// long z;
-
-// 	// y = printf("%p\n", (void *) -1);
-// 	// y = printf("%p", &z);
-
-// 	// int test = -1;
-// 	// y = ft_printf("This %p is even stranger", (void *)-1);
-// 	// x = ft_printf("TEST->%p\n", &test);
-
-// 	ft_printf("%X\n", -5);
-
-// 	printf("%X", -5);
-
-// 	// system("leaks a.out");
-//     // printf("\nlength MINE: %d\nlength blob: %d\n", x, y);
-//     return (0);
-// }

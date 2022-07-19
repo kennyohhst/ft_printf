@@ -6,7 +6,7 @@
 /*   By: kkalika <kkalika@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 14:48:04 by kkalika           #+#    #+#             */
-/*   Updated: 2022/07/19 16:30:51 by kkalika          ###   ########.fr       */
+/*   Updated: 2022/07/19 18:22:36 by kkalika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,18 @@ void	ft_putchar_x(char c)
 		write(1, &c, 1);
 }
 
-int	putnbr_x(unsigned long long i, unsigned int base, int count)
+int	ft_putnbr_x(unsigned long long i, unsigned int base, int count)
 {
 	count = 1;
 	if (i >= base)
 	{
-		count += putnbr_x(i / base, base, count);
+		count += ft_putnbr_x(i / base, base, count);
 	}
 	ft_putchar_x((i % base) + '0');
 	return (count);
 }
 
-void	ft_putchar_fd(char c)
+void	ft_putchar(char c)
 {
 	if (c == 58)
 		write(1, "a", sizeof(char));
@@ -59,7 +59,7 @@ void	ft_putchar_fd(char c)
 		write(1, &c, 1);
 }
 
-int	putnbr(long long i, int base, int count)
+int	ft_putnbr(long long i, int base, int count)
 {
 	count = 1;
 	if (i < 0 && base == 10)
@@ -69,19 +69,19 @@ int	putnbr(long long i, int base, int count)
 	}
 	if (i >= base)
 	{
-		count += putnbr(i / base, base, count);
+		count += ft_putnbr(i / base, base, count);
 	}
-	ft_putchar_fd((i % base) + '0');
+	ft_putchar((i % base) + '0');
 	return (count);
 }
 
-int	putnbr_p(unsigned long long i, unsigned int base, int count)
+int	ft_putnbr_p(unsigned long long i, unsigned int base, int count)
 {
 	count = 1;
 	if (i >= base)
 	{
-		count += putnbr_p(i / base, base, count);
+		count += ft_putnbr_p(i / base, base, count);
 	}
-	ft_putchar_fd((i % base) + '0');
+	ft_putchar((i % base) + '0');
 	return (count);
 }
